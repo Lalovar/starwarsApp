@@ -1,0 +1,1 @@
+export { useSearchCharacters } from './useSearchCharacters';
