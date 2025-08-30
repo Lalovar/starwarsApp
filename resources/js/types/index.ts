@@ -8,3 +8,9 @@ export interface Character {
   mass: string;
   films: string[];
 }
+
+export interface Film {
+  name: string;
+  description: string;
+  characters: any[];
+}

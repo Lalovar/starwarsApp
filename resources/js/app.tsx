@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '../css/app.css';
 import { useSearchCharacters } from './hooks/useSearchCharacters';
+import { MainContent } from './MainContent';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -25,7 +26,8 @@ const AppContent: React.FC = () => {
     };
 
     return (
-        <div>
+        // add tailwind classes for the div to occupy all the window 
+        <div className="bg-[#ededed] w-screen h-screen">
             <form onSubmit={handleSearch}>
                 <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 <button type="submit" disabled={isLoading}>Search</button>
@@ -45,7 +47,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
-            <AppContent />
+            <MainContent />
         </QueryClientProvider>
     );
 };
