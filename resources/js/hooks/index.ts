@@ -1,1 +1,1 @@
-export { useSearchCharacters } from './useSearchCharacters';
+export { useStarWarsSearch } from './useStarWarsSearch';

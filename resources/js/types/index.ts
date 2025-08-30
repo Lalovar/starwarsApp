@@ -11,6 +11,6 @@ export interface Character {
 
 export interface Film {
   name: string;
-  description: string;
-  characters: any[];
+  opening_crawl: string;
+  characters: string[];
 }
