@@ -10,7 +10,7 @@ Route::get('/api/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
-// Catch all routes for React router
+// Catch all routes for React router (excluding API routes)
 Route::get('/{any}', function () {
     return view('app');
-})->where('any', '.*');
+})->where('any', '^(?!api).*');

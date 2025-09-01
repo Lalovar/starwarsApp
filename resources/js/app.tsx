@@ -1,10 +1,10 @@
-import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import '../css/app.css';
 import { MainContent } from './MainContent';
 import { AppBar, CharacterDetail, FilmDetail } from './components';
-import '../css/app.css';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -25,6 +25,7 @@ const App: React.FC = () => {
                         <Route path="/" element={<MainContent />} />
                         <Route path="/character/:uid" element={<CharacterDetail />} />
                         <Route path="/film/:uid" element={<FilmDetail />} />
+                        <Route path="*" element={<h1>This page does not exist</h1>} />
                     </Routes>
                 </div>
             </BrowserRouter>
