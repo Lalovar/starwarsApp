@@ -18,7 +18,7 @@ Route::get('/searchByName/films', [FilmsByNameController::class, 'search']);
 Route::get('/searchByUID/films/{uid}', [FilmsByUIDController::class, 'search']);
 
 Route::get('/stats', [StatsController::class, 'latest']);
-Route::get('/stats/recompute', function () {
+Route::post('/stats/recompute', function () {
     try {
         Artisan::call('stats:compute');
         return response()->json(['message' => 'Stats recomputed successfully']);

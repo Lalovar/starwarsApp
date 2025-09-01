@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import '../css/app.css';
 import { MainContent } from './MainContent';
 import { AppBar, CharacterDetail, FilmDetail } from './components';
+import { StatsPage } from './Stats';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                         <Route path="/" element={<MainContent />} />
                         <Route path="/character/:uid" element={<CharacterDetail />} />
                         <Route path="/film/:uid" element={<FilmDetail />} />
+                        <Route path="/stats" element={<StatsPage />} />
                         <Route path="*" element={<h1>This page does not exist</h1>} />
                     </Routes>
                 </div>
