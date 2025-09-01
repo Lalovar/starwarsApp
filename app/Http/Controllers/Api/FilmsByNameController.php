@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 
-class FilmsController extends Controller
+class FilmsByNameController extends Controller
 {
     public function search(Request $request)
     {
@@ -28,9 +28,7 @@ class FilmsController extends Controller
                     $transformedResults = array_map(function ($film) {
                         return [
                             'name'        => $film['properties']['title'],
-                            'opening_crawl' => $film['properties']['opening_crawl'],
-                            'characters'   => $film['properties']['characters'],
-
+                            'uid'          => $film['uid'],
                         ];
                     }, $data['result']);
 

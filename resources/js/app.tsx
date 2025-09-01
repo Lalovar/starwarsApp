@@ -1,8 +1,10 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '../css/app.css';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { MainContent } from './MainContent';
+import { AppBar, CharacterDetail, FilmDetail } from './components';
+import '../css/app.css';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -16,7 +18,16 @@ const queryClient = new QueryClient({
 const App: React.FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
-            <MainContent />
+            <BrowserRouter>
+                <AppBar />
+                <div className="min-h-screen w-screen bg-[#ededed] pt-[20px]">
+                    <Routes>
+                        <Route path="/" element={<MainContent />} />
+                        <Route path="/character/:uid" element={<CharacterDetail />} />
+                        <Route path="/film/:uid" element={<FilmDetail />} />
+                    </Routes>
+                </div>
+            </BrowserRouter>
         </QueryClientProvider>
     );
 };

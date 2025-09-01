@@ -9,3 +9,8 @@ Route::get('/', function () {
 Route::get('/api/health', function () {
     return response()->json(['status' => 'ok']);
 });
+
+// Catch all routes for React router
+Route::get('/{any}', function () {
+    return view('app');
+})->where('any', '.*');

@@ -1,39 +1,70 @@
 import React from 'react';
-import { Character, Film } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { SearchResponse } from '../types';
+import { boxStyles } from '../utils';
 
 interface ResultsProps {
-    apiResponse: Character[] | Film[] | [];
+    apiResponse: SearchResponse[] | [];
     loading: boolean;
     error: string | null;
+    resource: 'people' | 'movies';
 }
 
-export const Results: React.FC<ResultsProps> = ({ apiResponse, loading, error }) => {
+const ResultsMessage = ({ text }: { text: string }) => {
     return (
-        <div className="shadow-color-[var(--warm-grey-75)] min-h-[400px] w-full max-w-md bg-white px-6 py-4 text-sm shadow-sm">
+        <span className="flex h-full items-center justify-center pb-16 text-center text-xs font-bold whitespace-pre-line text-[var(--pinkish-grey)]">
+            {text}
+        </span>
+    );
+};
+
+export const Results: React.FC<ResultsProps> = ({ apiResponse, loading, error, resource }) => {
+    return (
+        <div className={`min-h-[400px] w-full max-w-lg text-sm ${boxStyles}`}>
             <Item isHeader={true} />
-            {loading && <div>Loading...</div>}
+            {loading && <ResultsMessage text="Searching..." />}
             {error && <div>{error}</div>}
-            {!loading && !error && apiResponse?.length === 0 && <div>No results found</div>}
-            {!loading && !error && apiResponse?.length > 0 && apiResponse.map((item) => <Item key={(item as Character).name || (item as Film).name} data={item} />)}
+            {!loading && !error && apiResponse?.length === 0 && (
+                <ResultsMessage text={`There are zero matches. \r\n Use the form to search for People or Movies.`} />
+            )}
+            {!loading &&
+                !error &&
+                apiResponse?.length > 0 &&
+                apiResponse.map((item: SearchResponse) => <Item key={item.uid} data={item} resource={resource} />)}
         </div>
     );
 };
 
-const Item = (props: { isHeader?: boolean, data?: Character | Film }) => {
+const Item = (props: { isHeader?: boolean; data?: SearchResponse; resource?: 'people' | 'movies' }) => {
+    const navigate = useNavigate();
+
+    const handleSeeDetails = () => {
+        if (!props.data) return;
+
+        const item = props.data as SearchResponse;
+        const isCharacter = props.resource === 'people';
+
+        if (isCharacter) {
+            navigate(`/character/${encodeURIComponent(item.uid)}`);
+        } else {
+            navigate(`/film/${encodeURIComponent(item.uid)}`);
+        }
+    };
+
     return (
         <>
-            <div className='flex flex-row justify-between items-center'>
-                <span className={"font-bold text-" + (props.isHeader ? "xl mb-3" : "lg")}>{props.isHeader ? 'Results' : props.data?.name}</span>
-                {
-                    !props.isHeader && (
-                        <button
-                            className='w-auto text-[#fff] font-bold px-4 py-1.5 my-2.5 text-sm
-                            rounded-xl border-[var(--green-teal)] border-solid bg-[var(--green-teal)]'>
-                            SEE DETAILS
-                        </button>
-                    )}
+            <div className="flex flex-row items-center justify-between">
+                <span className={'font-bold text-' + (props.isHeader ? 'xl mb-3' : 'lg')}>{props.isHeader ? 'Results' : props.data?.name}</span>
+                {!props.isHeader && (
+                    <button
+                        onClick={handleSeeDetails}
+                        className="my-2.5 w-auto rounded-xl border-solid border-[var(--green-teal)] bg-[var(--green-teal)] px-4 py-1.5 text-sm font-bold text-[#fff]"
+                    >
+                        SEE DETAILS
+                    </button>
+                )}
             </div>
-            <div className='w-full h-[0.5px] bg-[var(--pinkish-grey)]'></div>
+            <div className="h-[0.5px] w-full bg-[var(--pinkish-grey)]"></div>
         </>
-    )
+    );
 };

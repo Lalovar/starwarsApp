@@ -1,8 +1,7 @@
-// MainContent.tsx
-import { useStarWarsSearch } from '@/hooks/useStarWarsSearch';
 import React, { useState } from 'react';
-import { AppBar, Results, Search } from './components';
-import { Character, Film } from './types';
+import { Results, Search } from './components';
+import { useStarWarsSearch } from './hooks/';
+import { SearchResponse } from './types';
 
 type Resource = 'people' | 'movies';
 
@@ -19,12 +18,9 @@ export const MainContent: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen w-screen bg-[#ededed]">
-            <AppBar />
-            <div className="flex flex-row flex-wrap justify-center gap-[15px]">
-                <Search resource={resourceDraft} onResourceChange={setResourceDraft} onSubmit={handleSubmit} />
-                <Results apiResponse={data as Character[] | Film[] | []} loading={isLoading} error={error ? error.message : null} />
-            </div>
+        <div className="flex flex-row flex-wrap justify-center gap-[15px]">
+            <Search resource={resourceDraft} onResourceChange={setResourceDraft} onSubmit={handleSubmit} loading={isLoading} />
+            <Results apiResponse={data as SearchResponse[] | []} resource={resourceDraft} loading={isLoading} error={error ? error.message : null} />
         </div>
     );
 };

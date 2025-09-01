@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 
-class PeopleController extends Controller
+class PeopleByNameController extends Controller
 {
     public function search(Request $request)
     {
@@ -28,13 +28,7 @@ class PeopleController extends Controller
                     $transformedResults = array_map(function ($character) {
                         return [
                             'name' => $character['properties']['name'],
-                            'birth_year' => $character['properties']['birth_year'],
-                            'gender' => $character['properties']['gender'],
-                            'eye_color' => $character['properties']['eye_color'],
-                            'hair_color' => $character['properties']['hair_color'],
-                            'height' => $character['properties']['height'],
-                            'mass' => $character['properties']['mass'],
-                            'films' => $character['properties']['films']
+                            'uid' => $character['uid'],
                         ];
                     }, $data['result']);
 
