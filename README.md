@@ -10,9 +10,10 @@ A clean Laravel + React application built for simplicity and performance.
 - **Star Wars API integration** - search for characters from SWAPI
 
 ## Run with docker
+
 Build images
 
-```sudo docker-compose up -d --build```
+```docker-compose up -d --build```
 
 Generate the Laravel application key inside the container:
 
