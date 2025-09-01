@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use App\Models\Query;
 
 class FilmsByNameController extends Controller
 {
@@ -16,9 +17,29 @@ class FilmsByNameController extends Controller
             return response()->json(['error' => 'Title parameter is required'], 400);
         }
 
+        $start = microtime(true);
+
         try {
             $response = Http::get('https://www.swapi.tech/api/films', [
                 'title' => $query
+            ]);
+
+            $duration = (int)((microtime(true) - $start) * 1000);
+
+            $ua = strtolower($request->userAgent());
+            $deviceType = 'desktop';
+            if (str_contains($ua, 'mobile')) {
+                $deviceType = 'mobile';
+            } elseif (str_contains($ua, 'tablet')) {
+                $deviceType = 'tablet';
+            }
+
+            Query::create([
+                'term'        => $query,
+                'resource'    => 'films',
+                'duration_ms' => $duration,
+                'success'     => $response->successful(),
+                'device_type' => $deviceType,
             ]);
 
             if ($response->successful()) {
@@ -27,8 +48,8 @@ class FilmsByNameController extends Controller
                 if (isset($data['result']) && is_array($data['result'])) {
                     $transformedResults = array_map(function ($film) {
                         return [
-                            'name'        => $film['properties']['title'],
-                            'uid'          => $film['uid'],
+                            'name' => $film['properties']['title'],
+                            'uid'  => $film['uid'],
                         ];
                     }, $data['result']);
 
@@ -40,6 +61,16 @@ class FilmsByNameController extends Controller
 
             return response()->json(['error' => 'Failed to fetch data from SWAPI'], 500);
         } catch (\Exception $e) {
+            $duration = (int)((microtime(true) - $start) * 1000);
+
+            Query::create([
+                'term'        => $query,
+                'resource'    => 'films',
+                'duration_ms' => $duration,
+                'success'     => false,
+                'device_type' => 'unknown',
+            ]);
+
             return response()->json([
                 'error' => 'Error connecting to SWAPI: ' . $e->getMessage()
             ], 500);
