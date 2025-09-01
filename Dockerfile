@@ -1,123 +1,45 @@
-# Multi-stage build for Laravel application
-FROM php:8.2-fpm-alpine AS base
+# Multi-stage Dockerfile for Laravel + React using SQLite
 
-# Install system dependencies
-RUN apk add --no-cache \
-    git \
-    curl \
-    libpng-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    sqlite \
-    sqlite-dev \
-    oniguruma-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libzip-dev
-
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
+# Composer dependencies
+FROM composer:2 AS vendor
 WORKDIR /var/www/html
-
-# Copy composer files
 COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
 
-# Copy artisan file and essential directories for composer scripts
-COPY artisan ./
-COPY bootstrap ./bootstrap
-COPY routes ./routes
-COPY app ./app
-COPY config ./config
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy remaining application files
-COPY . .
-
-# Create storage directory and set permissions
-RUN mkdir -p storage/framework/{sessions,views,cache} \
-    && mkdir -p storage/logs \
-    && chmod -R 775 storage \
-    && chown -R www-data:www-data storage
-
-# Install Node.js for frontend assets
-FROM node:18-alpine AS node
-
-WORKDIR /var/www/html
-
-# Copy package files
+# Node assets
+FROM node:20-alpine AS frontend
+WORKDIR /app
 COPY package.json package-lock.json ./
-
-# Install Node.js dependencies
-RUN npm ci --only=production
-
-# Copy frontend source files
-COPY resources/ ./resources/
+RUN npm ci
+COPY resources ./resources
+COPY public ./public
 COPY vite.config.ts tsconfig.json ./
-
-# Build frontend assets
+COPY components.json ./components.json
 RUN npm run build
 
-# Final stage
-FROM php:8.2-fpm-alpine
+# Runtime image
+FROM php:8.2-cli-alpine
 
-# Install system dependencies
+# Install system packages and PHP extensions
 RUN apk add --no-cache \
-    git \
-    curl \
-    libpng-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    sqlite \
-    sqlite-dev \
+    sqlite sqlite-dev \
     oniguruma-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
     libzip-dev \
-    supervisor \
-    dcron
+    zip unzip && \
+    docker-php-ext-install pdo_sqlite mbstring zip
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy application from base stage
-COPY --from=base /var/www/html .
+# Copy application source
+COPY . .
 
-# Copy built assets from node stage
-COPY --from=node /var/www/html/public/build ./public/build
+# Copy in dependencies and built assets
+COPY --from=vendor /var/www/html/vendor ./vendor
+COPY --from=frontend /app/public/build ./public/build
 
-# Create storage directory and set permissions
+# Ensure required directories exist
 RUN mkdir -p storage/framework/{sessions,views,cache} \
-    && mkdir -p storage/logs \
-    && mkdir -p /var/log/supervisor \
-    && chmod -R 775 storage \
-    && chown -R www-data:www-data storage
+    && chmod -R 775 storage bootstrap/cache
 
-# Copy supervisor configuration
-COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Copy entrypoint script
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Expose port
-EXPOSE 9000
-
-# Set entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+EXPOSE 8000
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

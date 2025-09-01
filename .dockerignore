@@ -23,8 +23,8 @@ storage/app/public/*
 bootstrap/cache/*
 
 # Environment files
-.env
-.env.*
+# .env
+# .env.*
 !.env.example
 
 # IDE

@@ -9,5 +9,13 @@ A clean Laravel + React application built for simplicity and performance.
 - **Tailwind CSS** for styling
 - **Star Wars API integration** - search for characters from SWAPI
 
-## Available Routes
+## Run with docker
+Build images
 
+```sudo docker-compose up -d --build```
+
+Generate the Laravel application key inside the container:
+
+```docker-compose exec app php artisan key:generate```
+
+## Available Routes
