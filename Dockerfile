@@ -41,5 +41,10 @@ COPY --from=frontend /app/public/build ./public/build
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && chmod -R 775 storage bootstrap/cache
 
+# Fix permissions for database and storage
+RUN chown -R www-data:www-data /var/www/html/database \
+    && chown -R www-data:www-data /var/www/html/storage \
+    && chmod 664 /var/www/html/database/database.sqlite
+
 EXPOSE 8000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
