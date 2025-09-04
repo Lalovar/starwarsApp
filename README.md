@@ -17,15 +17,131 @@ Experience the full Star Wars character database with real-time search and compr
 - **Tailwind CSS** for styling
 - **Star Wars API integration** - search for characters from SWAPI
 
-## Run with docker
+## 🚀 Development Commands
 
-Build images
+### Local Development
 
-```docker-compose up -d --build```
+Start the Laravel development server:
+```bash
+php artisan serve
+```
+
+Start the Vite development server for frontend assets:
+```bash
+npm run dev
+```
+
+Run both Laravel and Vite servers concurrently:
+```bash
+composer dev
+```
+
+### Queue Processing
+
+Start the queue worker to process background jobs:
+```bash
+php artisan queue:work
+```
+
+Start the queue worker with specific options:
+```bash
+php artisan queue:work --sleep=3 --tries=3
+```
+
+### Testing
+
+Run all tests:
+```bash
+vendor/bin/pest
+```
+
+Run only unit tests:
+```bash
+vendor/bin/pest --testsuite=Unit
+```
+
+Run only feature tests:
+```bash
+vendor/bin/pest --testsuite=Feature
+```
+
+Run tests with coverage:
+```bash
+vendor/bin/pest --coverage
+```
+
+### Code Quality
+
+Run ESLint to check and fix code style:
+```bash
+npm run lint
+```
+
+Run Prettier to format code:
+```bash
+npm run format
+```
+
+Check Prettier formatting without making changes:
+```bash
+npm run format:check
+```
+
+Run TypeScript type checking:
+```bash
+npm run types
+```
+
+### Database & Migrations
+
+Run database migrations:
+```bash
+php artisan migrate
+```
+
+Rollback the last migration:
+```bash
+php artisan migrate:rollback
+```
+
+Seed the database:
+```bash
+php artisan db:seed
+```
+
+### Custom Commands
+
+Compute and store search statistics:
+```bash
+php artisan stats:compute
+```
+
+### Docker Development
+
+Build and start all services:
+```bash
+docker-compose up -d --build
+```
 
 Generate the Laravel application key inside the container:
+```bash
+docker-compose exec app php artisan key:generate
+```
 
-```docker-compose exec app php artisan key:generate```
+Access the application container:
+```bash
+docker-compose exec app bash
+```
+
+View logs:
+```bash
+docker-compose logs -f
+```
+
+Stop all services:
+```bash
+docker-compose down
+```
 
 ## 🎓 Learnings
 

@@ -6,9 +6,6 @@ import {
 } from 'recharts';
 import { useStats, useRecomputeStats } from './hooks/useStats';
 
-type TopQuery = { term: string; count: number; percent: number };
-type SlowQuery = { term: string; ms: number };
-
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="rounded-lg bg-white p-4 shadow-sm">
     <div className="mb-3 text-sm font-semibold text-gray-700">{title}</div>
