@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Execute the command to compute stats every 5 minutes
-        $schedule->command('stats:compute')->cron('*/1 * * * *');
+        $schedule->command('stats:compute')->cron('*/5 * * * *');
     }
 
     /**
